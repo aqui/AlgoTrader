@@ -21,6 +21,16 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>ws.wamp.jawampa</groupId>
+			<artifactId>jawampa-core</artifactId>
+			<version>0.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ws.wamp.jawampa</groupId>
+			<artifactId>jawampa-netty</artifactId>
+			<version>0.5.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
