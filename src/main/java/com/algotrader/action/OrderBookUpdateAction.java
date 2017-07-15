@@ -29,36 +29,37 @@ public class OrderBookUpdateAction implements Action1<PubSubData>
 	@Override
 	public void call(PubSubData data)
 	{
-		try {
-			for (JsonNode node : data.arguments()) {
-
+		try 
+		{
+			for (JsonNode node : data.arguments()) 
+			{
 				String updateType = node.get(ID_UPDATE_TYPE).asText();
-
 				// skip updates that do not concern orderbook
-				if (!updateType.equals(ID_ORDER_BOOK_MODIFY) && !updateType.equals(ID_ORDER_BOOK_REMOVE)) {
+				if (!updateType.equals(ID_ORDER_BOOK_MODIFY) && !updateType.equals(ID_ORDER_BOOK_REMOVE)) 
+				{
 					continue;
 				}
-
 				JsonNode order = node.get(ID_DATA);
 				String orderType = order.get(ID_ORDER_TYPE).asText();
-
-				if (orderType.equals(acceptedOrderType.getCode())) {
-
-					if (updateType.equals(ID_ORDER_BOOK_MODIFY)) {
+				if (orderType.equals(acceptedOrderType.getCode())) 
+				{
+					if (updateType.equals(ID_ORDER_BOOK_MODIFY)) 
+					{
 						double rate = order.get(ID_ORDER_RATE).asDouble();
 						double amount = order.get(ID_ORDER_AMOUNT).asDouble();
 						orderBook.put(rate, amount);
-
-					} else if (updateType.equals(ID_ORDER_BOOK_REMOVE)) {
+					} 
+					else if (updateType.equals(ID_ORDER_BOOK_REMOVE)) 
+					{
 						double rate = order.get(ID_ORDER_RATE).asDouble();
 						orderBook.remove(rate);
 					}
-
 					System.out.println(acceptedOrderType + ": " + orderBook);
 				}
 			}
-
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			System.err.println(e);
 		}
 	}

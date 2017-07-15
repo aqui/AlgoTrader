@@ -50,19 +50,24 @@ public class TickerRecord
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
-
-		builder.append(currencyPair).append(": ");
-		builder.append("last=").append(last).append(", ");
-		builder.append("lowestAsk=").append(lowestAsk).append(", ");
-		builder.append("highestBid=").append(highestBid).append(", ");
-		builder.append("percentChange=").append(percentChange).append(", ");
-		builder.append("baseVolume=").append(baseVolume).append(", ");
-		builder.append("quoteVolume=").append(quoteVolume).append(", ");
-		builder.append("isFrozen=").append(isFrozen).append(", ");
-		builder.append("hr24high=").append(hr24high).append(", ");
-		builder.append("hr24low=").append(hr24low);
-
-		return builder.toString();
+		if(currencyPair.toString().equals("ETH/BTC"))
+		{
+			builder.append(currencyPair).append(": ");
+			builder.append("last=").append(last).append(", ");
+			builder.append("lowestAsk=").append(lowestAsk).append(", ");
+			builder.append("highestBid=").append(highestBid).append(", ");
+			builder.append("percentChange=").append(percentChange).append(", ");
+			builder.append("baseVolume=").append(baseVolume).append(", ");
+			builder.append("quoteVolume=").append(quoteVolume).append(", ");
+			builder.append("isFrozen=").append(isFrozen).append(", ");
+			builder.append("hr24high=").append(hr24high).append(", ");
+			builder.append("hr24low=").append(hr24low);
+			return builder.toString();
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public CurrencyPair getCurrencyPair()

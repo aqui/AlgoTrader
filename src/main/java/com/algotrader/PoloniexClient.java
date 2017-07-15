@@ -22,19 +22,15 @@ public class PoloniexClient
 	public PoloniexClient() throws Exception
 	{
 		NettyWampClientConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
-
 		WampClientBuilder builder = new WampClientBuilder();
-
 		builder.withConnectorProvider(connectorProvider);
 		builder.withUri(POLONIEX_API_URL);
 		builder.withRealm(REALM);
 		builder.withInfiniteReconnects();
 		builder.withReconnectInterval(RECONNECT_INTERVAL_SEC, TimeUnit.SECONDS);
-
 		client = builder.build();
 		orderBookAsk = new OrderBook();
 		orderBookBid = new OrderBook();
-
 		client.statusChanged().subscribe(new ClientStatusChangedAction(client, orderBookAsk, orderBookBid));
 	}
 

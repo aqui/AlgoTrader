@@ -9,10 +9,16 @@ public class PrintTickerDataAction implements Action1<PubSubData>
 	@Override
 	public void call(PubSubData data)
 	{
-		try {
+		try 
+		{
 			TickerRecord record = new TickerRecord(data);
-			System.out.println(record);
-		} catch (Exception e) {
+			if(record.toString()!=null)
+			{
+				System.out.println(record);
+			}
+		} 
+		catch (Exception e) 
+		{
 			System.err.println(e);
 		}
 	}
