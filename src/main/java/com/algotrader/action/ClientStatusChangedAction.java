@@ -15,12 +15,14 @@ public class ClientStatusChangedAction implements Action1<State>
 	private final WampClient client;
 	private final OrderBook orderBookAsk;
 	private final OrderBook orderBookBid;
-
-	public ClientStatusChangedAction(WampClient client, OrderBook orderBookAsk, OrderBook orderBookBid)
+	private String chartDataURI;
+	
+	public ClientStatusChangedAction(WampClient client, OrderBook orderBookAsk, OrderBook orderBookBid, String chartDataURI)
 	{
 		this.client = client;
 		this.orderBookAsk = orderBookAsk;
 		this.orderBookBid = orderBookBid;
+		this.chartDataURI = chartDataURI;
 	}
 
 	@Override
@@ -49,9 +51,9 @@ public class ClientStatusChangedAction implements Action1<State>
 
 	private void subscribeForUpdates()
 	{
-		client.makeSubscription("ticker").subscribe(new PrintTickerDataAction());
-		client.makeSubscription(CurrencyPair.BTC_ETH.getCode()).subscribe(new OrderBookUpdateAction(orderBookAsk, OrderType.ASK));
-		client.makeSubscription(CurrencyPair.BTC_ETH.getCode()).subscribe(new OrderBookUpdateAction(orderBookBid, OrderType.BID));
+		client.makeSubscription("ticker").subscribe(new PrintTickerDataAction(chartDataURI));
+		//client.makeSubscription(CurrencyPair.BTC_ETH.getCode()).subscribe(new OrderBookUpdateAction(orderBookAsk, OrderType.ASK));
+		//client.makeSubscription(CurrencyPair.BTC_ETH.getCode()).subscribe(new OrderBookUpdateAction(orderBookBid, OrderType.BID));
 		//client.makeSubscription(CurrencyPair.BTC_ETH.getCode()).subscribe(new TradeHistoryUpdateAction());
 	}
 }

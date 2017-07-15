@@ -19,7 +19,7 @@ public class PoloniexClient
 	private final OrderBook orderBookAsk;
 	private final OrderBook orderBookBid;
 
-	public PoloniexClient() throws Exception
+	public PoloniexClient(String chartDataURI) throws Exception
 	{
 		NettyWampClientConnectorProvider connectorProvider = new NettyWampClientConnectorProvider();
 		WampClientBuilder builder = new WampClientBuilder();
@@ -31,7 +31,7 @@ public class PoloniexClient
 		client = builder.build();
 		orderBookAsk = new OrderBook();
 		orderBookBid = new OrderBook();
-		client.statusChanged().subscribe(new ClientStatusChangedAction(client, orderBookAsk, orderBookBid));
+		client.statusChanged().subscribe(new ClientStatusChangedAction(client, orderBookAsk, orderBookBid, chartDataURI));
 	}
 
 	public void open()
