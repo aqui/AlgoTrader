@@ -6,9 +6,7 @@ import ws.wamp.jawampa.WampClient.ConnectedState;
 import ws.wamp.jawampa.WampClient.ConnectingState;
 import ws.wamp.jawampa.WampClient.DisconnectedState;
 import ws.wamp.jawampa.WampClient.State;
-import com.algotrader.currency.CurrencyPair;
 import com.algotrader.orderbook.OrderBook;
-import com.algotrader.orderbook.OrderType;
 
 public class ClientStatusChangedAction implements Action1<State>
 {
