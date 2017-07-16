@@ -13,6 +13,7 @@ import java.util.List;
 import com.algotrader.CandleStickPatternRec;
 import com.algotrader.ChartData;
 import com.algotrader.Indicator;
+import com.algotrader.gui.CandleStickChart;
 import com.algotrader.ticker.TickerRecord;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,6 +34,7 @@ public class PrintTickerDataAction implements Action1<PubSubData>
 	private CandleStickPatternRec candleStickPatternRec = new CandleStickPatternRec();
 	private Indicator indicator = new Indicator();
 	private List<Object> candleStickPattern = new ArrayList<Object>();
+	private CandleStickChart candleStickChart;
 	
 	public CandleStickPatternRec getCandleStickPatternRec() {
 		return candleStickPatternRec;
@@ -86,8 +88,10 @@ public class PrintTickerDataAction implements Action1<PubSubData>
         candleStickPattern.add(volumeArray);
         candleStickPattern.add(quoteVolumeArray);
         candleStickPattern.add(weightedAverageArray);
-        candleStickPatternRec.recognize(candleStickPattern);
+        //candleStickPatternRec.recognize(candleStickPattern);
         indicator.setIndicators(candleStickPattern);
+        if(candleStickChart==null)
+        	candleStickChart = new CandleStickChart(candleStickPattern);
         candleStickPattern.clear();
 	}
 	
@@ -102,7 +106,6 @@ public class PrintTickerDataAction implements Action1<PubSubData>
 		volumeArray = new double[chartDataListSize];
 		quoteVolumeArray = new double[chartDataListSize];
 		weightedAverageArray = new double[chartDataListSize];
-		
 		for (ChartData chartData : chartDataList) 
 		{
 			dateArray[chartDataList.indexOf(chartData)] = chartData.getDate();
