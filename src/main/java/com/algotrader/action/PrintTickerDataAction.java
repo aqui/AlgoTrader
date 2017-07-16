@@ -6,10 +6,13 @@ import ws.wamp.jawampa.PubSubData;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.algotrader.CandleStickPatternRec;
 import com.algotrader.ChartData;
+import com.algotrader.Indicator;
 import com.algotrader.ticker.TickerRecord;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,7 +30,26 @@ public class PrintTickerDataAction implements Action1<PubSubData>
 	private double[] volumeArray;
 	private double[] quoteVolumeArray;
 	private double[] weightedAverageArray;
+	private CandleStickPatternRec candleStickPatternRec = new CandleStickPatternRec();
+	private Indicator indicator = new Indicator();
+	private List<Object> candleStickPattern = new ArrayList<Object>();
 	
+	public CandleStickPatternRec getCandleStickPatternRec() {
+		return candleStickPatternRec;
+	}
+
+	public void setCandleStickPatternRec(CandleStickPatternRec candleStickPatternRec) {
+		this.candleStickPatternRec = candleStickPatternRec;
+	}
+
+	public List<Object> getCandleStickPattern() {
+		return candleStickPattern;
+	}
+
+	public void setCandleStickPattern(List<Object> candleStickPattern) {
+		this.candleStickPattern = candleStickPattern;
+	}
+
 	public PrintTickerDataAction(String chartDataURI)
 	{
 		this.chartDataURI = chartDataURI;
@@ -47,7 +69,7 @@ public class PrintTickerDataAction implements Action1<PubSubData>
 		} 
 		catch (Exception e) 
 		{
-			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -56,19 +78,30 @@ public class PrintTickerDataAction implements Action1<PubSubData>
         ObjectMapper mapper = new ObjectMapper();
         List<ChartData> chartDataList = mapper.readValue(new URL(chartDataURI), new TypeReference<List<ChartData>>(){});
         parseChartData(chartDataList);
+        candleStickPattern.add(dateArray);
+        candleStickPattern.add(highArray);
+        candleStickPattern.add(lowArray);
+        candleStickPattern.add(closeArray);
+        candleStickPattern.add(openArray);
+        candleStickPattern.add(volumeArray);
+        candleStickPattern.add(quoteVolumeArray);
+        candleStickPattern.add(weightedAverageArray);
+        candleStickPatternRec.recognize(candleStickPattern);
+        indicator.setIndicators(candleStickPattern);
+        candleStickPattern.clear();
 	}
 	
 	public void parseChartData(List<ChartData> chartDataList)
 	{
-		int chartDataListSize = chartDataList.size()-1;
-		Date[] dateArray = new Date[chartDataListSize];
-		double[] highArray = new double[chartDataListSize];
-		double[] lowArray = new double[chartDataListSize];
-		double[] closeArray = new double[chartDataListSize];
-		double[] openArray = new double[chartDataListSize];
-		double[] volumeArray = new double[chartDataListSize];
-		double[] quoteVolumeArray = new double[chartDataListSize];
-		double[] weightedAverageArray = new double[chartDataListSize];
+		int chartDataListSize = chartDataList.size();
+		dateArray = new Date[chartDataListSize];
+		highArray = new double[chartDataListSize];
+		lowArray = new double[chartDataListSize];
+		closeArray = new double[chartDataListSize];
+		openArray = new double[chartDataListSize];
+		volumeArray = new double[chartDataListSize];
+		quoteVolumeArray = new double[chartDataListSize];
+		weightedAverageArray = new double[chartDataListSize];
 		
 		for (ChartData chartData : chartDataList) 
 		{
