@@ -15,8 +15,8 @@ public class ScheduledTask extends TimerTask
 	
 	public void run() 
 	{
-		String apikey = "831bc09194794e52bbff18a2fbc7ccc5";
-		String secret = "99cdcd3469b342b4a46d8623f80d0cdd";
+		String apikey = "asd";
+		String secret = "asd";
 		Bittrex bittrex = new Bittrex(apikey, secret, 1, 1);
 		JSONObject json = new JSONObject(bittrex.getMarketSummary("btc-waves"));
 		if(newValue==0)
