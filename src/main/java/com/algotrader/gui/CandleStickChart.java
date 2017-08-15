@@ -49,7 +49,7 @@ public class CandleStickChart extends ApplicationFrame
 	}
 
 	private JFreeChart createChart(final DefaultHighLowDataset dataset) {
-		final JFreeChart chart = ChartFactory.createCandlestickChart("Candlestick Demo", "Time", "Price", dataset,
+		final JFreeChart chart = ChartFactory.createCandlestickChart("kendıl sitik", "Time", "Price", dataset,
 				false);
 		return chart;
 	}
