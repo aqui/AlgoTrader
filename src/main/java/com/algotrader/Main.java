@@ -37,6 +37,6 @@ public class Main {
 		// Bittrex
 		Timer time = new Timer();
 		ScheduledTask st = new ScheduledTask();
-		time.schedule(st, 0, 1000);
+		time.schedule(st, 0, 1);
 	}
 }
