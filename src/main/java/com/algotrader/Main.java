@@ -37,6 +37,10 @@ public class Main {
 		// Bittrex
 		Timer time = new Timer();
 		ScheduledTask st = new ScheduledTask();
-		time.schedule(st, 0, 1);
+		String apikey = "asd";
+		String secret = "asd";
+		Bittrex bittrex = new Bittrex(apikey, secret, 1, 1);
+		st.setBittrex(bittrex);
+		time.schedule(st, 0, 1000);
 	}
 }
