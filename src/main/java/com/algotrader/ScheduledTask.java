@@ -8,11 +8,12 @@ public class ScheduledTask extends TimerTask
 {
 	private double newValue;
 	private double lastSoldAt;
-	private double lastBoughtAt;
-	private double initialBoughtAt = 0.10d;
+	private double lastBoughtAt = 0.070d;
 	private double totalBTC = 0d;
-	private double totalCoin = 3d;
-	private String coin = "bcc";
+	private double preTotalBTC;
+	private double totalCoin = 5.92811797d;
+	private double preTotalCoin;
+	private String coin = "eth";
 	private double low;
 	private double high;
 	private Bittrex bittrex;
@@ -21,9 +22,9 @@ public class ScheduledTask extends TimerTask
 	
 	public ScheduledTask()
 	{
-		System.out.println("Initial buy price: "+initialBoughtAt+" BTC");
+		System.out.println("Initial buy price: "+lastBoughtAt+" BTC");
 		System.out.println("Initial total "+coin.toUpperCase()+": "+totalCoin);
-		System.out.println("Initial cost: "+((initialBoughtAt*totalCoin)+(initialBoughtAt*totalCoin)*0.25/100));
+		System.out.println("Initial cost: "+((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100));
 		System.out.println("Getting ready to trade...");
 		System.out.println("--------------------------------");
 	}
@@ -44,7 +45,7 @@ public class ScheduledTask extends TimerTask
 		if(newValue == 0)
 		{
 			newValue = current;
-			if(newValue > initialBoughtAt)
+			if(newValue > lastBoughtAt)
 			{
 				preSell();
 				waiting = 1;
@@ -81,16 +82,14 @@ public class ScheduledTask extends TimerTask
 
 	private void preSell() 
 	{
+		preTotalCoin = totalCoin;
 		double incomeBTC = (newValue * totalCoin) - (((newValue * totalCoin) * 0.25) / 100);
-		if(totalBTC!=0)
+		if(incomeBTC < preTotalBTC)
 		{
-			if(totalBTC<(totalBTC+incomeBTC))
-			{
-				return;
-			}
+			return;
 		}
 		waiting = 1;
-		totalBTC += incomeBTC;
+		totalBTC = incomeBTC;
 		totalCoin = 0;
 		lastSoldAt = newValue;
 		System.out.println("Sold at: "+newValue+" BTC");
@@ -99,13 +98,14 @@ public class ScheduledTask extends TimerTask
 	
 	private void preBuy() 
 	{
+		preTotalBTC = totalBTC;
 		double incomeCoin = (totalBTC / newValue) - (((totalBTC / newValue) * 0.25) / 100);
-		if(totalCoin<(totalCoin+incomeCoin))
+		if(incomeCoin < preTotalCoin)
 		{
 			return;
 		}
 		waiting = 0;
-		totalCoin += incomeCoin;
+		totalCoin = incomeCoin;
 		totalBTC = 0;
 		lastBoughtAt = newValue;
 		System.out.println("Bought at: "+newValue+" BTC");
