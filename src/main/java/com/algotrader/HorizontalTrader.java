@@ -8,7 +8,7 @@ public class HorizontalTrader extends TimerTask
 {
 	private double newValue;
 	private double lastSoldAt;
-	private double lastBoughtAt = 0.06d;
+	private double lastBoughtAt = 0.100d;
 	private double totalBTC = 0d;
 	private double totalCoin = 2d;
 	private double initialCoin = 2d;
@@ -33,19 +33,24 @@ public class HorizontalTrader extends TimerTask
 	private double ask; //lowest priced sell order
 	private double bid; //highest priced buy order
 	private double last; //the price at which the last trade occurred
+	private int boughtSold = 0; //bought=1, sold=2
+	private String market;
 	
 	public HorizontalTrader(Bittrex bittrex, String spentCoin, String coin)
 	{
 		this.bittrex = bittrex;
 		this.spentCoin = spentCoin;
 		this.coin = coin;
+		this.market = spentCoin+"-"+coin;
 		setMarketValues(spentCoin+"-"+coin);
-		System.out.println("Initial buy price: "+lastBoughtAt+" BTC");
+		System.out.println("Initial buy price: "+lastBoughtAt+" "+spentCoin.toUpperCase());
 		System.out.println("Initial total "+coin.toUpperCase()+": "+totalCoin);
-		System.out.println("Initial cost: "+initialCostBTC);
+		System.out.println("Initial cost: "+initialCostBTC+" "+spentCoin.toUpperCase());
 		System.out.println("ASK: "+ask);
 		System.out.println("BID: "+bid);
 		System.out.println("LAST: "+last);
+		System.out.println("LOW: "+low);
+		System.out.println("HIGH: "+high);
 		System.out.println("Getting ready to trade...");
 		System.out.println("--------------------------------");
 	}
@@ -63,6 +68,8 @@ public class HorizontalTrader extends TimerTask
 		ask = (double) json.getJSONArray("result").getJSONObject(0).get("Ask");
 		bid = (double) json.getJSONArray("result").getJSONObject(0).get("Bid");
 		last = (double) json.getJSONArray("result").getJSONObject(0).get("Last");
+		low = last = (double) json.getJSONArray("result").getJSONObject(0).get("Low");
+		high = (double) json.getJSONArray("result").getJSONObject(0).get("High");
 	}
 	
 	public void run() 
@@ -76,27 +83,31 @@ public class HorizontalTrader extends TimerTask
 			return;
 		}
 		
-		if(newValue == 0)
+		if(boughtSold == 0) //sell them all first
 		{
-			newValue = last;
+			newValue = bid;
 			if(newValue > lastBoughtAt)
 			{
 				preSell();
-				waiting = 1;
+				//waiting = 1;
 			}
 		}
 		else
 		{
-			if(newValue != last)
+			if(boughtSold == 2) //if it's sold
 			{
-				newValue = last;
-				if(newValue > lastBoughtAt && totalCoin > 0 && newValue<=high)
-				{
-					preSell();
-				}
+				newValue = ask;
 				if(newValue < lastSoldAt && totalBTC > 0 && newValue>=low)
 				{
 					preBuy();
+				}
+			}
+			else if(boughtSold == 1) //if it's bought
+			{
+				newValue = bid;
+				if(newValue > lastBoughtAt && totalCoin > 0 && newValue<=high)
+				{
+					preSell();
 				}
 			}
 		}
@@ -124,8 +135,25 @@ public class HorizontalTrader extends TimerTask
 		}
 		if(incomeBTC < initialCostBTC)
 		{
-			System.out.println("BTC zarar!");
 			return;
+		}
+		String orderBook = bittrex.getOrderBook(market, "buy");
+		JSONObject orderjson = new JSONObject(orderBook);
+		double orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+		if(orderQuantity < totalCoin)
+		{
+			return;
+		}
+		String sold = placeSell(String.valueOf(totalCoin), String.valueOf(newValue));
+		JSONObject jsons = new JSONObject(sold);
+		if(!jsons.get("success").toString().equals("false"))
+		{
+			lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
+			System.out.println(lastUUID);
+		}
+		else
+		{
+			//return;
 		}
 		waiting = 1;
 		totalBTC = incomeBTC;
@@ -133,6 +161,7 @@ public class HorizontalTrader extends TimerTask
 		lastSoldAt = newValue;
 		System.out.println("Sold at: "+newValue+" BTC");
 		printEmAll();
+		boughtSold = 2;
 	}
 	
 	private void preBuy() 
@@ -145,8 +174,25 @@ public class HorizontalTrader extends TimerTask
 		}
 		if(incomeCoin < initialCoin)
 		{
-			System.out.println("Coin zarar!");
 			return;
+		}
+		String orderBook = bittrex.getOrderBook(market, "sell");
+		JSONObject orderjson = new JSONObject(orderBook);
+		double orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+		if(orderQuantity < totalBTC)
+		{
+			return;
+		}
+		String bought = placeBuy(String.valueOf(totalBTC), String.valueOf(newValue));
+		JSONObject jsons = new JSONObject(bought);
+		if(!jsons.get("success").toString().equals("false"))
+		{
+			lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
+			System.out.println(lastUUID);
+		}
+		else
+		{
+			//return;
 		}
 		waiting = 0;
 		totalCoin = incomeCoin;
@@ -154,24 +200,24 @@ public class HorizontalTrader extends TimerTask
 		lastBoughtAt = newValue;
 		System.out.println("Bought at: "+newValue+" BTC");
 		printEmAll();
+		boughtSold = 1;
 	}
 	
 	private void printEmAll()
 	{
-		System.out.printf("New Price: %.12f BTC\n", newValue);
 		System.out.printf("Total BTC: %.12f\n", totalBTC);
 		System.out.printf("Total "+coin.toUpperCase()+": %.12f\n", totalCoin);
 		System.out.println("--------------------------------");
 	}
 	
-	private boolean realSell(double quantity, double rate)
+	private String placeSell(String quantity, String rate)
 	{
-		return false;
+		return bittrex.sellLimit(market, quantity, rate);
 	}
 	
-	private boolean realBuy()
+	private String placeBuy(String quantity, String rate)
 	{
-		return false;
+		return bittrex.buyLimit(market, quantity, rate);
 	}
 
 	private void cancelBuyOrSell(String uuid)
