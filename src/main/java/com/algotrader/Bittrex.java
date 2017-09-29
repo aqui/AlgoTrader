@@ -281,7 +281,6 @@ public class Bittrex {
 		url += type + "/";
 		url += method;
 		url += generateUrlParameters(parameters);
-
 		return url;
 	}
 
