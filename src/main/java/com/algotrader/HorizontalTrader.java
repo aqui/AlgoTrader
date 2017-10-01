@@ -1,5 +1,6 @@
 package com.algotrader;
 
+import java.util.Date;
 import java.util.TimerTask;
 
 import org.json.JSONObject;
@@ -8,10 +9,10 @@ public class HorizontalTrader extends TimerTask
 {
 	private double newValue;
 	private double lastSoldAt;
-	private double lastBoughtAt = 0.100d;
+	private double lastBoughtAt = 0.06940000d;
 	private double totalBTC = 0d;
-	private double totalCoin = 2d;
-	private double initialCoin = 2d;
+	private double totalCoin = 0.10003186d;
+	private double initialCoin = 0.10003186d;
 	private double initialCostBTC = ((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100);
 	private double preTotalBTC;
 	private double preTotalCoin;
@@ -51,7 +52,7 @@ public class HorizontalTrader extends TimerTask
 		System.out.println("LAST: "+last);
 		System.out.println("LOW: "+low);
 		System.out.println("HIGH: "+high);
-		System.out.println("Getting ready to trade...");
+		System.out.println("Getting ready to trade... "+new Date());
 		System.out.println("--------------------------------");
 	}
 	
@@ -113,6 +114,10 @@ public class HorizontalTrader extends TimerTask
 		}
 		if(waiting==0)
 		{
+			if(boughtSold == 0)
+			{
+				System.out.println("Bid must be greater than: "+(initialCostBTC/(0.9975d*initialCoin)));
+			}
 			System.out.println("waiting to sell...");
 			System.out.println("--------------------------------");
 			waiting = 2;
@@ -138,8 +143,17 @@ public class HorizontalTrader extends TimerTask
 			return;
 		}
 		String orderBook = bittrex.getOrderBook(market, "buy");
-		JSONObject orderjson = new JSONObject(orderBook);
-		double orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+		double orderQuantity;
+		try 
+		{
+			JSONObject orderjson = new JSONObject(orderBook);
+			orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+		} 
+		catch (Exception e) 
+		{
+			System.out.println(e);
+			return;
+		}
 		if(orderQuantity < totalCoin)
 		{
 			return;
@@ -148,18 +162,25 @@ public class HorizontalTrader extends TimerTask
 		JSONObject jsons = new JSONObject(sold);
 		if(!jsons.get("success").toString().equals("false"))
 		{
-			lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
-			System.out.println(lastUUID);
+			try 
+			{
+				lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
+				System.out.println(lastUUID);
+			} 
+			catch (Exception e) 
+			{
+				System.out.println(e);
+			}
 		}
 		else
 		{
-			//return;
+			return;
 		}
 		waiting = 1;
 		totalBTC = incomeBTC;
 		totalCoin = 0;
 		lastSoldAt = newValue;
-		System.out.println("Sold at: "+newValue+" BTC");
+		System.out.println("Sold at: "+newValue+" BTC "+new Date());
 		printEmAll();
 		boughtSold = 2;
 	}
@@ -177,8 +198,17 @@ public class HorizontalTrader extends TimerTask
 			return;
 		}
 		String orderBook = bittrex.getOrderBook(market, "sell");
-		JSONObject orderjson = new JSONObject(orderBook);
-		double orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+		double orderQuantity;
+		try 
+		{
+			JSONObject orderjson = new JSONObject(orderBook);
+			orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+		} 
+		catch (Exception e) 
+		{
+			System.out.println(e);
+			return;
+		}
 		if(orderQuantity < totalBTC)
 		{
 			return;
@@ -187,18 +217,25 @@ public class HorizontalTrader extends TimerTask
 		JSONObject jsons = new JSONObject(bought);
 		if(!jsons.get("success").toString().equals("false"))
 		{
-			lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
-			System.out.println(lastUUID);
+			try 
+			{
+				lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
+				System.out.println(lastUUID);
+			} 
+			catch (Exception e) 
+			{
+				System.out.println(e);
+			}
 		}
 		else
 		{
-			//return;
+			return;
 		}
 		waiting = 0;
 		totalCoin = incomeCoin;
 		totalBTC = 0;
 		lastBoughtAt = newValue;
-		System.out.println("Bought at: "+newValue+" BTC");
+		System.out.println("Bought at: "+newValue+" BTC "+new Date());
 		printEmAll();
 		boughtSold = 1;
 	}
@@ -207,6 +244,7 @@ public class HorizontalTrader extends TimerTask
 	{
 		System.out.printf("Total BTC: %.12f\n", totalBTC);
 		System.out.printf("Total "+coin.toUpperCase()+": %.12f\n", totalCoin);
+		System.out.println("Time: "+new Date());
 		System.out.println("--------------------------------");
 	}
 	

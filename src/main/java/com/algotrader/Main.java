@@ -36,10 +36,10 @@ public class Main {
 		// }
 		// Bittrex
 		Timer time = new Timer();
-		String apikey = "c4d4d457fb1c410ab2892e9973302b03";
-		String secret = "101a42e369cb42a0b6568565c1f986e9";
+		String apikey = "";
+		String secret = "";
 		Bittrex bittrex = new Bittrex(apikey, secret, 1, 1);
-		HorizontalTrader st = new HorizontalTrader(bittrex, "btc", "bcc");
+		HorizontalTrader st = new HorizontalTrader(bittrex, "btc", "eth");
 		time.schedule(st, 0, 1000);
 	}
 }

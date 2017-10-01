@@ -237,7 +237,7 @@ public class Bittrex {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			System.out.println(e);
 		}
 
 		return map;
@@ -363,7 +363,7 @@ public class Bittrex {
 					
 				} catch (InterruptedException e1) {
 					
-					e1.printStackTrace();
+					System.out.println(e1);
 				}
 				
 				result = getResponseBody(baseUrl);
@@ -375,7 +375,7 @@ public class Bittrex {
 			
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			System.out.println(e);
 			
 		} finally {
 			
