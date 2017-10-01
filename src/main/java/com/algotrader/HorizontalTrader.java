@@ -9,10 +9,10 @@ public class HorizontalTrader extends TimerTask
 {
 	private double newValue;
 	private double lastSoldAt;
-	private double lastBoughtAt = 0.06940000d;
+	private double lastBoughtAt = 0.06932471d;
 	private double totalBTC = 0d;
-	private double totalCoin = 0.10003186d;
-	private double initialCoin = 0.10003186d;
+	private double totalCoin = 0.08485771d;
+	private double initialCoin = 0.08485771d;
 	private double initialCostBTC = ((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100);
 	private double preTotalBTC;
 	private double preTotalCoin;
@@ -142,39 +142,46 @@ public class HorizontalTrader extends TimerTask
 		{
 			return;
 		}
-		String orderBook = bittrex.getOrderBook(market, "buy");
-		double orderQuantity;
 		try 
 		{
+			String orderBook = bittrex.getOrderBook(market, "buy");
 			JSONObject orderjson = new JSONObject(orderBook);
-			orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+			double orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+			if(orderQuantity < totalCoin)
+			{
+				return;
+			}
 		} 
 		catch (Exception e) 
 		{
 			System.out.println(e);
 			return;
 		}
-		if(orderQuantity < totalCoin)
+		String sold = null;
+		try 
 		{
+			sold = bittrex.sellLimit(market, String.valueOf(totalCoin), String.valueOf(newValue));
+		} 
+		catch (Exception e) 
+		{
+			System.out.println(e);
 			return;
 		}
-		String sold = placeSell(String.valueOf(totalCoin), String.valueOf(newValue));
-		JSONObject jsons = new JSONObject(sold);
-		if(!jsons.get("success").toString().equals("false"))
+		if(sold!=null)
 		{
 			try 
 			{
-				lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
-				System.out.println(lastUUID);
+				JSONObject jsons = new JSONObject(sold);
+				if(!jsons.get("success").toString().equals("false"))
+				{
+					lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
+					System.out.println(lastUUID);
+				}
 			} 
 			catch (Exception e) 
 			{
 				System.out.println(e);
 			}
-		}
-		else
-		{
-			return;
 		}
 		waiting = 1;
 		totalBTC = incomeBTC;
@@ -197,39 +204,47 @@ public class HorizontalTrader extends TimerTask
 		{
 			return;
 		}
-		String orderBook = bittrex.getOrderBook(market, "sell");
-		double orderQuantity;
+		
 		try 
 		{
+			String orderBook = bittrex.getOrderBook(market, "sell");
 			JSONObject orderjson = new JSONObject(orderBook);
-			orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+			double orderQuantity = (double) orderjson.getJSONArray("result").getJSONObject(0).get("Quantity");
+			if(orderQuantity < totalBTC)
+			{
+				return;
+			}
 		} 
 		catch (Exception e) 
 		{
 			System.out.println(e);
 			return;
 		}
-		if(orderQuantity < totalBTC)
+		String bought = null;
+		try 
 		{
+			bought = bittrex.buyLimit(market, String.valueOf(totalBTC), String.valueOf(newValue));
+		} 
+		catch (Exception e) 
+		{
+			System.out.println(e);
 			return;
 		}
-		String bought = placeBuy(String.valueOf(totalBTC), String.valueOf(newValue));
-		JSONObject jsons = new JSONObject(bought);
-		if(!jsons.get("success").toString().equals("false"))
+		if(bought!=null)
 		{
 			try 
 			{
-				lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
-				System.out.println(lastUUID);
+				JSONObject jsons = new JSONObject(bought);
+				if(!jsons.get("success").toString().equals("false"))
+				{
+					lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
+					System.out.println(lastUUID);
+				}
 			} 
 			catch (Exception e) 
 			{
 				System.out.println(e);
 			}
-		}
-		else
-		{
-			return;
 		}
 		waiting = 0;
 		totalCoin = incomeCoin;
@@ -247,22 +262,7 @@ public class HorizontalTrader extends TimerTask
 		System.out.println("Time: "+new Date());
 		System.out.println("--------------------------------");
 	}
-	
-	private String placeSell(String quantity, String rate)
-	{
-		return bittrex.sellLimit(market, quantity, rate);
-	}
-	
-	private String placeBuy(String quantity, String rate)
-	{
-		return bittrex.buyLimit(market, quantity, rate);
-	}
 
-	private void cancelBuyOrSell(String uuid)
-	{
-		
-	}
-	
 	public Bittrex getBittrex() 
 	{
 		return bittrex;
