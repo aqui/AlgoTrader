@@ -39,7 +39,7 @@ public class Main {
 		String apikey = "";
 		String secret = "";
 		Bittrex bittrex = new Bittrex(apikey, secret, 1, 1);
-		HorizontalTrader st = new HorizontalTrader(bittrex, "btc", "eth");
+		LinearTrader st = new LinearTrader(bittrex, "btc", "ada");
 		time.schedule(st, 0, 1000);
 	}
 }

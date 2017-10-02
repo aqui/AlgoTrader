@@ -5,14 +5,14 @@ import java.util.TimerTask;
 
 import org.json.JSONObject;
 
-public class HorizontalTrader extends TimerTask 
+public class LinearTrader extends TimerTask 
 {
 	private double newValue;
 	private double lastSoldAt;
-	private double lastBoughtAt = 0.06932471d;
+	private double lastBoughtAt = 0.00000400d;
 	private double totalBTC = 0d;
-	private double totalCoin = 0.08485771d;
-	private double initialCoin = 0.08485771d;
+	private double totalCoin = 100d;
+	private double initialCoin = 100d;
 	private double initialCostBTC = ((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100);
 	private double preTotalBTC;
 	private double preTotalCoin;
@@ -37,21 +37,21 @@ public class HorizontalTrader extends TimerTask
 	private int boughtSold = 0; //bought=1, sold=2
 	private String market;
 	
-	public HorizontalTrader(Bittrex bittrex, String spentCoin, String coin)
+	public LinearTrader(Bittrex bittrex, String spentCoin, String coin)
 	{
 		this.bittrex = bittrex;
 		this.spentCoin = spentCoin;
 		this.coin = coin;
 		this.market = spentCoin+"-"+coin;
 		setMarketValues(spentCoin+"-"+coin);
-		System.out.println("Initial buy price: "+lastBoughtAt+" "+spentCoin.toUpperCase());
-		System.out.println("Initial total "+coin.toUpperCase()+": "+totalCoin);
-		System.out.println("Initial cost: "+initialCostBTC+" "+spentCoin.toUpperCase());
-		System.out.println("ASK: "+ask);
-		System.out.println("BID: "+bid);
-		System.out.println("LAST: "+last);
-		System.out.println("LOW: "+low);
-		System.out.println("HIGH: "+high);
+		System.out.printf("Initial buy price %.12f "+spentCoin.toUpperCase()+"\n", lastBoughtAt);
+		System.out.printf("Initial total %.12f "+coin.toUpperCase()+"\n",totalCoin);
+		System.out.printf("Initial cost %.12f "+spentCoin.toUpperCase()+"\n",initialCostBTC);
+		System.out.printf("ASK: %.12f\n",ask);
+		System.out.printf("BID: %.12f\n",bid);
+		System.out.printf("LAST: %.12f\n",last);
+		System.out.printf("LOW: %.12f\n",low);
+		System.out.printf("HIGH: %.12f\n",high);
 		System.out.println("Getting ready to trade... "+new Date());
 		System.out.println("--------------------------------");
 	}
@@ -116,7 +116,7 @@ public class HorizontalTrader extends TimerTask
 		{
 			if(boughtSold == 0)
 			{
-				System.out.println("Bid must be greater than: "+(initialCostBTC/(0.9975d*initialCoin)));
+				System.out.printf("Bid must be greater than: %.12f \n",(initialCostBTC/(0.9975d*initialCoin)));
 			}
 			System.out.println("waiting to sell...");
 			System.out.println("--------------------------------");
@@ -187,7 +187,7 @@ public class HorizontalTrader extends TimerTask
 		totalBTC = incomeBTC;
 		totalCoin = 0;
 		lastSoldAt = newValue;
-		System.out.println("Sold at: "+newValue+" BTC "+new Date());
+		System.out.printf("Sold at %.12f "+spentCoin.toUpperCase() +" " + new Date()+"\n",newValue);
 		printEmAll();
 		boughtSold = 2;
 	}
@@ -250,7 +250,7 @@ public class HorizontalTrader extends TimerTask
 		totalCoin = incomeCoin;
 		totalBTC = 0;
 		lastBoughtAt = newValue;
-		System.out.println("Bought at: "+newValue+" BTC "+new Date());
+		System.out.printf("Bought at %.12f "+spentCoin.toUpperCase()+" "+new Date()+"\n",newValue);
 		printEmAll();
 		boughtSold = 1;
 	}
