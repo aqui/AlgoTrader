@@ -9,10 +9,10 @@ public class LinearTrader extends TimerTask
 {
 	private double newValue;
 	private double lastSoldAt;
-	private double lastBoughtAt = 0.00000400d;
+	private double lastBoughtAt;
 	private double totalBTC = 0d;
-	private double totalCoin = 100d;
-	private double initialCoin = 100d;
+	private double totalCoin;
+	private double initialCoin;
 	private double initialCostBTC = ((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100);
 	private double preTotalBTC;
 	private double preTotalCoin;
@@ -37,12 +37,15 @@ public class LinearTrader extends TimerTask
 	private int boughtSold = 0; //bought=1, sold=2
 	private String market;
 	
-	public LinearTrader(Bittrex bittrex, String spentCoin, String coin)
+	public LinearTrader(Bittrex bittrex, String spentCoin, String coin, double lastBoughtAt, double totalCoin, double initialCoin)
 	{
 		this.bittrex = bittrex;
 		this.spentCoin = spentCoin;
 		this.coin = coin;
 		this.market = spentCoin+"-"+coin;
+		this.lastBoughtAt = lastBoughtAt;
+		this.totalCoin = totalCoin;
+		this.initialCoin = initialCoin;
 		setMarketValues(spentCoin+"-"+coin);
 		System.out.printf("Initial buy price %.12f "+spentCoin.toUpperCase()+"\n", lastBoughtAt);
 		System.out.printf("Initial total %.12f "+coin.toUpperCase()+"\n",totalCoin);
@@ -177,6 +180,10 @@ public class LinearTrader extends TimerTask
 					lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
 					System.out.println(lastUUID);
 				}
+				else
+				{
+					return;
+				}
 			} 
 			catch (Exception e) 
 			{
@@ -239,6 +246,10 @@ public class LinearTrader extends TimerTask
 				{
 					lastUUID = (String) jsons.getJSONArray("result").getJSONObject(0).get("uuid");
 					System.out.println(lastUUID);
+				}
+				else
+				{
+					return;
 				}
 			} 
 			catch (Exception e) 

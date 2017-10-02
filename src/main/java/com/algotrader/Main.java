@@ -36,10 +36,10 @@ public class Main {
 		// }
 		// Bittrex
 		Timer time = new Timer();
-		String apikey = "";
-		String secret = "";
+		String apikey = "asd";
+		String secret = "asd";
 		Bittrex bittrex = new Bittrex(apikey, secret, 1, 1);
-		LinearTrader st = new LinearTrader(bittrex, "btc", "ada");
+		LinearTrader st = new LinearTrader(bittrex, "btc", "ada", 0.00000400d, 100d, 100d);
 		time.schedule(st, 0, 1000);
 	}
 }
