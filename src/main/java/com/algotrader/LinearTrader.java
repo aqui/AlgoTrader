@@ -13,7 +13,7 @@ public class LinearTrader extends TimerTask
 	private double totalBTC = 0d;
 	private double totalCoin;
 	private double initialCoin;
-	private double initialCostBTC = ((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100);
+	private double initialCostBTC;
 	private double preTotalBTC;
 	private double preTotalCoin;
 	private String coin;
@@ -37,7 +37,7 @@ public class LinearTrader extends TimerTask
 	private int boughtSold = 0; //bought=1, sold=2
 	private String market;
 	
-	public LinearTrader(Bittrex bittrex, String spentCoin, String coin, double lastBoughtAt, double totalCoin, double initialCoin)
+	public LinearTrader(Bittrex bittrex, String spentCoin, String coin, double lastBoughtAt, double totalCoin)
 	{
 		this.bittrex = bittrex;
 		this.spentCoin = spentCoin;
@@ -45,17 +45,21 @@ public class LinearTrader extends TimerTask
 		this.market = spentCoin+"-"+coin;
 		this.lastBoughtAt = lastBoughtAt;
 		this.totalCoin = totalCoin;
-		this.initialCoin = initialCoin;
+		this.initialCoin = totalCoin;
+		this.initialCostBTC = ((lastBoughtAt*totalCoin)+(lastBoughtAt*totalCoin)*0.25/100);
 		setMarketValues(spentCoin+"-"+coin);
+		System.out.println("---Initial Values---");
 		System.out.printf("Initial buy price %.12f "+spentCoin.toUpperCase()+"\n", lastBoughtAt);
 		System.out.printf("Initial total %.12f "+coin.toUpperCase()+"\n",totalCoin);
 		System.out.printf("Initial cost %.12f "+spentCoin.toUpperCase()+"\n",initialCostBTC);
+		System.out.println("---Current Values---");
 		System.out.printf("ASK: %.12f\n",ask);
 		System.out.printf("BID: %.12f\n",bid);
 		System.out.printf("LAST: %.12f\n",last);
 		System.out.printf("LOW: %.12f\n",low);
 		System.out.printf("HIGH: %.12f\n",high);
-		System.out.println("Getting ready to trade... "+new Date());
+		System.out.println("Time: "+new Date());
+		System.out.println("---Ready, set, go!---");
 		System.out.println("--------------------------------");
 	}
 	
@@ -119,15 +123,15 @@ public class LinearTrader extends TimerTask
 		{
 			if(boughtSold == 0)
 			{
-				System.out.printf("Bid must be greater than: %.12f \n",(initialCostBTC/(0.9975d*initialCoin)));
+				System.out.printf("Bid must be greater than: %.12f \n", (initialCostBTC/(0.9975d*initialCoin)));
 			}
-			System.out.println("waiting to sell...");
+			System.out.println("Waiting to sell...");
 			System.out.println("--------------------------------");
 			waiting = 2;
 		}
 		if(waiting==1)
 		{
-			System.out.println("waiting to buy...");
+			System.out.println("Waiting to buy...");
 			System.out.println("--------------------------------");
 			waiting = 2;
 		}

@@ -276,7 +276,6 @@ public class Bittrex {
 	private String generateUrl(String apiVersion, String type, String method, HashMap<String, String> parameters) {
 
 		String url = INITIAL_URL;
-
 		url += "v" + apiVersion + "/";
 		url += type + "/";
 		url += method;
@@ -330,7 +329,6 @@ public class Bittrex {
 
 		String result = null;
 		final String url = baseUrl + "apikey=" + apikey + "&nonce=" + EncryptionUtility.generateNonce();
-
 		try {
 			
 			HttpClient client = HttpClientBuilder.create().build();

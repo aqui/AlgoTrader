@@ -39,7 +39,8 @@ public class Main {
 		String apikey = "asd";
 		String secret = "asd";
 		Bittrex bittrex = new Bittrex(apikey, secret, 1, 1);
-		LinearTrader st = new LinearTrader(bittrex, "btc", "ada", 0.00000400d, 100d, 100d);
+		//Bittrex, market, currency, initial buy price, initial total coin
+		LinearTrader st = new LinearTrader(bittrex, "btc", "eth", 0.05d, 0.08485771d);
 		time.schedule(st, 0, 1000);
 	}
 }
