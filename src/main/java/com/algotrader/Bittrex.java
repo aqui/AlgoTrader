@@ -35,7 +35,6 @@ public class Bittrex {
 		this.secret = secret;
 		this.retryAttempts = retryAttempts;
 		this.retryDelaySeconds = retryDelaySeconds;
-		
 		retryAttemptsLeft = retryAttempts;
 	}
 
@@ -43,7 +42,6 @@ public class Bittrex {
 		
 		this.retryAttempts = retryAttempts;
 		this.retryDelaySeconds = retryDelaySeconds;
-		
 		retryAttemptsLeft = retryAttempts;
 	}
 	
